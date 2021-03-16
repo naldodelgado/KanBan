@@ -118,6 +118,28 @@ void insert_3(List l2, List l3) {
     }
 }
 
+void reopen(List l3, List l1){
+    List no,ant,inutil;
+    int n; printf("Type the card ID you want to move (Done -> ToDo) - "); scanf("%d", &n);
+    List aux=search_list(l3,n);
+     if (aux == NULL)
+        printf("Error: Card not found\n");
+    else {
+        /* First copy everything we want to keep and then insert it into "ToDo" list*/
+        no = (List)malloc(sizeof(List_node));
+        no->card.id = aux->card.id; // copy id
+        no->card.priority = aux->card.priority; // copy priority
+        no->card.begin = aux->card.begin; // copy begin date
+        no->card.description = aux->card.description; // copy description
+        look_list(l1,no->card.id,&ant,&inutil);
+        no->next = ant->next;
+        ant->next = no;
+        /* delete the card from "Done" list once we have stored a copy of itself on the "ToDo" list*/
+        delete_list(l3,n);
+        l3->n--;l1->n++;
+    }
+}
+
 void change_person(List l2) {
     List aux;
     int n; printf("Type the card ID you want to change the person (Doing) - "); scanf("%d", &n);
@@ -193,11 +215,12 @@ int main() {
     while(input!=0) {
         
         if      (input==0) exit(0);
-        else if (input==1) insert_1(ToDo);                  // 1. inserir uma nova tarefa na lista "To Do"
-        else if (input==3) change_person(Doing);            // 3. Alterar a pessoa responsável por um cartão em "Doing"
-        else if (input==2) insert_2(ToDo,Doing);            // 2. Mover cartões "To Do" -> "Doing"
-        else if (input==4) insert_3(Doing,Done);            // 4. Fechar tarefa. "Doing" -> "Done"
+        else if (input==1) insert_1(ToDo);                             // 1. inserir uma nova tarefa na lista "To Do"
+        else if (input==3) change_person(Doing);                // 3. Alterar a pessoa responsável por um cartão em "Doing"
+        else if (input==2) insert_2(ToDo,Doing);                   // 2. Mover cartões "To Do" -> "Doing"
+        else if (input==4) insert_3(Doing,Done);                  // 4. Fechar tarefa. "Doing" -> "Done"
         else if (input==6) print_board(ToDo,Doing,Done);    // 6. Visualizar o quadro
+        else if (input==5) reopen(Done,ToDo);                    // 5. Reabrir tarefa. "Done" -> "To Do"
         
         else printf("Error: invalid input\n");
         
@@ -206,7 +229,7 @@ int main() {
     printf("See you next time!\n");
 
     
-    // 5. Reabrir tarefa. "Done" -> "To Do"
+    
     // 7. Visualizar as tarefas de uma pessoa
     // 8. Visualizar as tarefas ordenas por data de criação
     return 0;

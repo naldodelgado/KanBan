@@ -29,3 +29,4 @@ void insert_1(List l);
 void insert_2(List l1, List l2);
 void insert_3(List l2, List l3);
 void print_board(List l1, List l2, List l3);
+void reopen(List l1,List l2);
