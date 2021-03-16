@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "header.h"
 
 #define N 5
@@ -74,6 +75,7 @@ void insert_1(List l) {
         ant->next = no;
     }
     l->n++;
+    getchar();system("clear");printf("card %d inserted into ToDo\n",no->card.id);menu();
 }
 
 void insert_2(List l1, List l2) {
@@ -98,6 +100,7 @@ void insert_2(List l1, List l2) {
             l1->n--; l2->n++;
         }
     }
+    getchar();system("clear");printf("card %d from ToDo moved to DOING\n",no->card.id);menu();
 }
 
 void insert_3(List l2, List l3) {
@@ -116,6 +119,7 @@ void insert_3(List l2, List l3) {
         delete_list(l2,n);
         l2->n--; l3->n++;
     }
+    getchar();system("clear");printf("card %d from DOING moved to DONE\n",no->card.id);menu();
 }
 
 void reopen(List l3, List l1){
@@ -138,6 +142,7 @@ void reopen(List l3, List l1){
         delete_list(l3,n);
         l3->n--;l1->n++;
     }
+    getchar();system("clear");printf("task %d reopened\n",no->card.id);menu();
 }
 
 void change_person(List l2) {
@@ -150,6 +155,59 @@ void change_person(List l2) {
     else {
         getchar(); printf("New person responsable - "); fgets(aux2, 256, stdin); aux->card.person = aux2;
     }
+    getchar();system("clear");printf("%s is now in charge of the card %d\n",aux2,n);menu();
+}
+
+void spy(List l2,List l3){
+    int foundflag = 0;
+    char * name = malloc(256*sizeof(char));
+    getchar();printf("Insert the name of the person whose tasks you would like to view\n"); fgets(name, 256, stdin);
+
+    printf("\n____________________________________\n");
+    printf("             DOING    //person:%s\n",name);
+    printf("____________________________________\n");
+    /*while funct searching for the person*/
+    List k2 = l2->next;
+    while(k2){
+        if(!strcmp(k2->card.person,name)){ // comparing the two names
+            foundflag = 1;
+            printf(" ___________________\n");
+            printf("| ID - %d\n", k2->card.id);
+            printf("| PRIORITY - %d\n", k2->card.priority);
+            printf("| DATE - %d/%d/%d\n", k2->card.begin.day, k2->card.begin.month, k2->card.begin.year);
+            printf("| DESCRIPTION - %s", k2->card.description);
+            printf("| DEADLINE - %d/%d/%d\n", k2->card.deadline.day, k2->card.deadline.month, k2->card.deadline.year);
+        }
+        k2 = k2->next;
+    }
+    if(!foundflag){
+        printf("No tasks\n");
+        foundflag = 0;
+    }
+
+    printf("\n____________________________________\n");
+    printf("             DONE   //person:%s\n",name);
+    printf("____________________________________\n");
+    /*while funct searching for the person*/
+    List k3 = l3->next;
+    while(k3){
+        if(!strcmp(k3->card.person,name)){ // comparing the two names
+            foundflag =1;
+            printf(" ___________________\n");
+            printf("| ID - %d\n", k3->card.id);
+            printf("| PRIORITY - %d\n", k3->card.priority);
+            printf("| DATE - %d/%d/%d\n", k3->card.begin.day, k3->card.begin.month, k3->card.begin.year);
+            printf("| DESCRIPTION - %s", k3->card.description);
+            printf("| DEADLINE - %d/%d/%d\n", k3->card.deadline.day, k3->card.deadline.month, k3->card.deadline.year);
+            printf("| DATE OF CONCLUSION - %d/%d/%d\n", k3->card.end.day, k3->card.end.month, k3->card.end.year);   
+        }
+        k3 = k3->next;
+    }
+    if(!foundflag){
+        printf("No tasks\n");
+        foundflag = 0;
+    }
+    getchar();system("clear");menu();
 }
 
 void print_board(List l1, List l2, List l3) {
@@ -199,6 +257,10 @@ void print_board(List l1, List l2, List l3) {
         k3 = k3->next;
     }
     printf("\nNumber of cards - %d\n", l3->n);
+    printf("___________________________________\n");
+    printf("Press any key to go back to menu\n");
+    getchar();
+    getchar();system("clear");menu();
 }
 
 
@@ -220,7 +282,8 @@ int main() {
         else if (input==2) insert_2(ToDo,Doing);                   // 2. Mover cartões "To Do" -> "Doing"
         else if (input==4) insert_3(Doing,Done);                  // 4. Fechar tarefa. "Doing" -> "Done"
         else if (input==6) print_board(ToDo,Doing,Done);    // 6. Visualizar o quadro
-        else if (input==5) reopen(Done,ToDo);                    // 5. Reabrir tarefa. "Done" -> "To Do"
+        else if (input==5) reopen(Done,ToDo);                     // 5. Reabrir tarefa. "Done" -> "To Do"
+        else if (input==7) spy(Doing,Done);                         // 7. Visualizar as tarefas de uma pessoa
         
         else printf("Error: invalid input\n");
         
@@ -228,9 +291,7 @@ int main() {
     }
     printf("See you next time!\n");
 
-    
-    
-    // 7. Visualizar as tarefas de uma pessoa
+
     // 8. Visualizar as tarefas ordenas por data de criação
     return 0;
 }
