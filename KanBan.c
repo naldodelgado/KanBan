@@ -4,6 +4,20 @@
 
 #define N 5
 
+void menu(){
+    printf("\n________________________________________________________\n");
+    printf("                               MENU                        \n");
+    printf(" 1 - Insert task into ToDo\n");
+    printf(" 2 - Move Tasks from \"ToDo\" to \"Doing\"\n");
+    printf(" 3 - Give/Alternate task responsability to someone\n");
+    printf(" 4 - Finish a task\n");
+    printf(" 5 - Interrupt a task\n");
+    printf(" 6 - View boards\n");
+    printf(" 7 - View someone's tasks\n");
+    printf(" 8 - Sort tasks by creation date\n");
+    printf("________________________________________________________\n");
+}
+
 List create_list() {
     List a = (List)malloc(sizeof(List_node));
     if (a!=NULL) {
@@ -171,10 +185,13 @@ int main() {
     List ToDo = create_list();
     List Doing = create_list();
     List Done = create_list();
+    
+    menu();
     int input;
     printf("$ "); scanf("%d", &input);
 
     while(input!=0) {
+        
         if      (input==0) exit(0);
         else if (input==1) insert_1(ToDo);                  // 1. inserir uma nova tarefa na lista "To Do"
         else if (input==3) change_person(Doing);            // 3. Alterar a pessoa responsável por um cartão em "Doing"
