@@ -1,5 +1,5 @@
 typedef struct date {
-    int day, month, year;
+    int day, month, year,valid;
 } Date;
 
 

@@ -3,7 +3,47 @@
 #include <string.h>
 #include "header.h"
 
+/********************Problems to solve***********************
+    - reserve cards ID so there will be no duplicated IDs
+        ideas: reserve them on arrays
+                  autoincrement IDs
+
+    - table apresentations on horizontal
+        ideas: brute force
+                  find something on stack
+
+    -  data storing
+        ideas: find an equivalent to JSON 
+ *************************************************************/
+
 #define N 5
+
+int IsDateValid(Date input){
+    //check year
+    if(input.year>=2000 && input.year<=9999)
+    {
+        //check month
+        if(input.month>=1 && input.month<=12)
+        {
+            //check days
+            if((input.day>=1 && input.day<=31) && (input.month==1 || input.month==3 || input.month==5 || input.month==7 || input.month==8 || input.month==10 || input.month==12))
+                return 1;
+            else if((input.day>=1 && input.day<=30) && (input.month==4 || input.month==6 || input.month==9 || input.month==11))
+                return 1;
+            else if((input.day>=1 && input.day<=28) && (input.month==2))
+                return 1;
+            else if(input.day==29 && input.month==2 && (input.year%400==0 ||(input.year%4==0 && input.year%100!=0)))
+                return 1;
+            else
+                return 1;
+        }
+        else
+            printf("Invalid Date, try again m\n");
+    }
+    else
+        printf("Invalid Date, try again y\n");
+    return 0;
+}
 
 void menu(){
     printf("\n________________________________________________________\n");
@@ -34,7 +74,14 @@ Card create_card() {
     printf("\nCREATE NEW CARD\n");
     printf("ID = "); scanf("%d", &c.id);
     printf("Priority (1-10) = "); scanf("%d", &c.priority);
-    printf("Creation date (day month year) = "); scanf("%d%d%d", &c.begin.day, &c.begin.month, &c.begin.year); getchar();
+    Date input;
+    do{
+        printf("Creation date (day month year) = "); scanf("%d%d%d", &input.day, &input.month, &input.year); 
+    }while(!IsDateValid(input));
+    c.begin.day=input.day;
+    c.begin.month=input.month;
+    c.begin.year=input.year;
+    getchar();
     printf("Description: "); fgets(aux, 256, stdin); c.description=aux;
     return c;
 }
