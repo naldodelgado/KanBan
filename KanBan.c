@@ -3,20 +3,31 @@
 #include <string.h>
 #include "header.h"
 
-/********************Problems to solve***********************
-    - reserve cards ID so there will be no duplicated IDs
-        ideas: reserve them on arrays
-                  autoincrement IDs
+/***********************************************************Problems to solve***********************************************************************
+*               - reserve cards ID so there will be no duplicated IDs
+*                     ideas: reserve them on arrays and then store them on files
+*                             autoincrement IDs
+*                             run through every List and check of there is any card with that same ID 
+*
+*               - table apresentations on horizontal
+*                     ideas: brute force
+*                             find 'presentations hacks' w\o using <graph.h> on stack
+*
+*               -  data storing
+*                     ideas: find an equivalent to JSON ex: "#include<json-c/json.h>"
+*                             brute force creating functions to read and edit files
+*                     questions:
+*                           should we save state after every interaction or should we save state only before quitting the program?
+*                           if we save state only before quitting is there a way to prevent Data loss/corruption after a forced interruption (^C or process kill)?
+******************************************************************************************************************************************************/
 
-    - table apresentations on horizontal
-        ideas: brute force
-                  find something on stack
-
-    -  data storing
-        ideas: find an equivalent to JSON 
- *************************************************************/
+/*****************************************************************************
+ *  Data files should contain an array with all IDs so we dont repeat IDs
+ *  Card List file for each List, probably should keep each List on different files
+ **************************************************************************** */
 
 #define N 5
+
 
 int IsDateValid(Date input){
     //check year
