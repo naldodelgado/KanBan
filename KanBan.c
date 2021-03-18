@@ -335,13 +335,13 @@ int main() {
     while(input!=0) {
         
         if      (input==0) exit(0);
-        else if (input==1) insert_1(ToDo);                             // 1. inserir uma nova tarefa na lista "To Do"
+        else if (input==1) insert_1(ToDo);                      // 1. inserir uma nova tarefa na lista "To Do"
         else if (input==3) change_person(Doing);                // 3. Alterar a pessoa responsável por um cartão em "Doing"
-        else if (input==2) insert_2(ToDo,Doing);                   // 2. Mover cartões "To Do" -> "Doing"
-        else if (input==4) insert_3(Doing,Done);                  // 4. Fechar tarefa. "Doing" -> "Done"
-        else if (input==6) print_board(ToDo,Doing,Done);    // 6. Visualizar o quadro
-        else if (input==5) reopen(Done,ToDo);                     // 5. Reabrir tarefa. "Done" -> "To Do"
-        else if (input==7) spy(Doing,Done);                         // 7. Visualizar as tarefas de uma pessoa
+        else if (input==2) insert_2(ToDo,Doing);                // 2. Mover cartões "To Do" -> "Doing"
+        else if (input==4) insert_3(Doing,Done);                // 4. Fechar tarefa. "Doing" -> "Done"
+        else if (input==6) print_board(ToDo,Doing,Done);        // 6. Visualizar o quadro
+        else if (input==5) reopen(Done,ToDo);                   // 5. Reabrir tarefa. "Done" -> "To Do"
+        else if (input==7) spy(Doing,Done);                     // 7. Visualizar as tarefas de uma pessoa
         
         else printf("Error: invalid input\n");
         
