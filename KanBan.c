@@ -35,13 +35,13 @@ int IsDateValid(Date input){
             else if(input.day==29 && input.month==2 && (input.year%400==0 ||(input.year%4==0 && input.year%100!=0)))
                 return 1;
             else
-                return 1;
+                printf("Invalid Date, try again\n");
         }
         else
-            printf("Invalid Date, try again m\n");
+            printf("Invalid Date, try again\n");
     }
     else
-        printf("Invalid Date, try again y\n");
+        printf("Invalid Date, try again\n");
     return 0;
 }
 
@@ -139,7 +139,13 @@ void insert_2(List l1, List l2) {
             no = (List)malloc(sizeof(List_node));
             no->card = aux->card;
             getchar(); printf("Person responsable - "); fgets(aux2, 256, stdin); no->card.person = aux2;
-            printf("Write a deadline (day month year) - "); scanf("%d%d%d", &no->card.deadline.day, &no->card.deadline.month, &no->card.deadline.year);
+            Date input;
+            do{
+                printf("Write a deadline (day month year) - "); scanf("%d%d%d", &input.day, &input.month, &input.year); 
+            }while(!IsDateValid(input));
+            no->card.deadline.day=input.day;
+            no->card.deadline.month=input.month;
+            no->card.deadline.year=input.year;
             look_list(l2,no->card.id,&ant,&inutil);
             no->next = ant->next;
             ant->next = no;
@@ -159,7 +165,13 @@ void insert_3(List l2, List l3) {
     else {
         no = (List)malloc(sizeof(List_node));
         no->card = aux->card;
-        printf("Write date of conclusion (day month year) - "); scanf("%d%d%d", &no->card.end.day, &no->card.end.month, &no->card.end.year);
+        Date input;
+        do{
+            printf("Write date of conclusion (day month year) - "); scanf("%d%d%d", &input.day, &input.month, &input.year); 
+        }while(!IsDateValid(input));
+        no->card.end.day=input.day;
+        no->card.end.month=input.month;
+        no->card.end.year=input.year;
         look_list(l3,no->card.id,&ant,&inutil);
         no->next = ant->next;
         ant->next = no;
