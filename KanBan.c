@@ -77,6 +77,19 @@ int IsDateValid(Date input){
     return 0;
 }
 
+int datecmp(Date d1, Date d2){
+    if(d1.year<d2.year)
+        return 1;
+    else if(d1.month<d2.month)
+        return 1;
+    else if(d1.day<d2.day)
+        return 1;
+    else if(d1.day == d2.day)
+        return 0;
+    else
+        return -1;
+}
+
 void menu(){
     printf("\n________________________________________________________\n");
     printf("                               MENU                        \n");
@@ -103,8 +116,9 @@ List create_list() {
 Card* create_card() {
     Card *c = malloc(sizeof(*c));
     char *aux = malloc(256*sizeof(char));
-    printf("\nCREATE NEW CARD\n");
     c->id = get_newid();
+    printf("\nCREATE NEW CARD || id=%d\n",c->id);
+    
     printf("Priority (1-10) = "); scanf("%d", &c->priority);
     Date input;
     do{
@@ -120,11 +134,41 @@ Card* create_card() {
 
 void look_list(List l, int p, List *ant, List *atual) {
     *ant = l; *atual = l->next;
-    while ((*atual)!=NULL && (*atual)->card->id<p) {
+    while ((*atual)!=NULL && (*atual)->card->id>p) {
         *ant = *atual;
         *atual = (*atual)->next;
     }
     if ((*atual)!=NULL && (*atual)->card->id!=p)
+        *atual = NULL;
+}
+
+void look_list1(List l, int p, List *ant, List *atual) {
+    *ant = l; *atual = l->next;
+    while ((*atual)!=NULL && (*atual)->card->priority>p) {
+        *ant = *atual;
+        *atual = (*atual)->next;
+    }
+    if ((*atual)!=NULL && (*atual)->card->priority!=p)
+        *atual = NULL;
+}
+
+void look_list2(List l, char *person, List *ant, List *atual) {
+    *ant = l; *atual = l->next;
+    while ((*atual)!=NULL && strcmp((*atual)->card->person,person) > 0) {
+        *ant = *atual;
+        *atual = (*atual)->next;
+    }
+    if ((*atual)!=NULL && strcmp((*atual)->card->person,person) != 0)
+        *atual = NULL;
+}
+
+void look_list3(List l, Date d, List *ant, List *atual) {
+    *ant = l; *atual = l->next;
+    while ((*atual)!=NULL && datecmp((*atual)->card->end,d) > 0) {
+        *ant = *atual;
+        *atual = (*atual)->next;
+    }
+    if ((*atual)!=NULL && datecmp((*atual)->card->end,d) !=0)
         *atual = NULL;
 }
 
@@ -143,13 +187,13 @@ void delete_list(List l, int n) {
     }
 }
 
-void insert_1(List l) {
+void insert_1(List l) { // this one should insert them ordered by priority
     List no;
     List ant, inutil;
     no = (List)malloc(sizeof(List_node));
     if (no!=NULL) {
         no->card = create_card();
-        look_list(l,no->card->id,&ant,&inutil);
+        look_list1(l,no->card->priority,&ant,&inutil);
         no->next = ant->next;
         ant->next = no;
     }
@@ -157,7 +201,7 @@ void insert_1(List l) {
     getchar();system("clear");printf("card %d inserted into ToDo\n",no->card->id);menu();
 }
 
-void insert_2(List l1, List l2) {
+void insert_2(List l1, List l2) { // this one should insert them ordered by
     List no, ant, inutil;
     char *aux2 = malloc(256*sizeof(char));
     if (l2->n == N)
@@ -171,9 +215,6 @@ void insert_2(List l1, List l2) {
             no = (List)malloc(sizeof(List_node));
             no->card = aux->card;
             getchar(); printf("Person responsable - "); fgets(aux2, 256, stdin); no->card->person = aux2;
-            printf("Write a deadline (day month year) - "); scanf("%d%d%d", &no->card->deadline.day, &no->card->deadline.month, &no->card->deadline.year);
-            look_list(l2,no->card->id,&ant,&inutil);
-            getchar(); printf("Person responsable - "); fgets(aux2, 256, stdin); no->card->person = aux2;
             Date input;
             do{
                 printf("Write a deadline (day month year) - "); scanf("%d%d%d", &input.day, &input.month, &input.year); 
@@ -181,14 +222,15 @@ void insert_2(List l1, List l2) {
             no->card->deadline.day=input.day;
             no->card->deadline.month=input.month;
             no->card->deadline.year=input.year;
-            look_list(l2,no->card->id,&ant,&inutil);
+            look_list2(l2,no->card->person,&ant,&inutil);
             no->next = ant->next;
             ant->next = no;
             delete_list(l1,n);
             l1->n--; l2->n++;
         }
     }
-    getchar();system("clear");printf("card %d from ToDo moved to DOING\n",no->card->id);menu();
+    system("clear");
+    printf("card %d from ToDo moved to DOING\n",no->card->id);menu();
 }
 
 void insert_3(List l2, List l3) {
@@ -200,8 +242,6 @@ void insert_3(List l2, List l3) {
     else {
         no = (List)malloc(sizeof(List_node));
         no->card = aux->card;
-        printf("Write date of conclusion (day month year) - "); scanf("%d%d%d", &no->card->end.day, &no->card->end.month, &no->card->end.year);
-        look_list(l3,no->card->id,&ant,&inutil);
         Date input;
         do{
             printf("Write date of conclusion (day month year) - "); scanf("%d%d%d", &input.day, &input.month, &input.year); 
@@ -209,13 +249,13 @@ void insert_3(List l2, List l3) {
         no->card->end.day=input.day;
         no->card->end.month=input.month;
         no->card->end.year=input.year;
-        look_list(l3,no->card->id,&ant,&inutil);
+        look_list3(l3,no->card->end,&ant,&inutil);
         no->next = ant->next;
         ant->next = no;
         delete_list(l2,n);
         l2->n--; l3->n++;
     }
-    getchar();system("clear");printf("card %d from DOING moved to DONE\n",no->card->id);menu();
+    system("clear");printf("card %d from DOING moved to DONE\n",no->card->id);menu();
 }
 
 void reopen(List l3, List l1){
@@ -372,7 +412,7 @@ int main() {
 
     while(input!=0) {
         
-        if      (input==0) exit(0);
+        if         (input==0) exit(0);
         else if (input==1) insert_1(ToDo);                      // 1. inserir uma nova tarefa na lista "To Do"
         else if (input==3) change_person(Doing);                // 3. Alterar a pessoa responsável por um cartão em "Doing"
         else if (input==2) insert_2(ToDo,Doing);                // 2. Mover cartões "To Do" -> "Doing"
