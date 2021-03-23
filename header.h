@@ -16,7 +16,7 @@ Card* create_card();
 
 typedef struct lnode* List;
 typedef struct lnode {
-    Card *card; // should be a pointer
+    Card *card;
     int n;
     List next;
 } List_node;
