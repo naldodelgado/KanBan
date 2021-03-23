@@ -8,7 +8,7 @@
 /***********************************************************Problems to solve***********************************************************************
 *               - reserve cards ID so there will be no duplicated IDs
 *                     ideas: reserve them on arrays and then store them on files
-*                             autoincrement IDs
+*                             autoincrement IDs (THIS IS ACTUALLY A REQUIREMENT)
 *                             run through every List and check of there is any card with that same ID 
 *
 *               - table apresentations on horizontal
@@ -30,6 +30,25 @@
 
 #define N 5
 
+
+int get_newid(){
+    FILE *f = fopen("id.txt","r");
+    if(f==NULL){ // if the file doenst exist then the program will create it and store the first ID
+        f=fopen("id.txt","w");
+        fprintf(f,"%d",1);
+        fclose(f);
+        return 1; // the first ID
+    }else{
+        int id;
+        fscanf(f,"%d",&id);
+        fclose(f);
+        f = fopen("id.txt","w"); // clears the file
+        fprintf(f,"%d",++id);
+        fclose(f);
+        return id;
+    }
+
+}
 
 int IsDateValid(Date input){
     //check year
@@ -85,7 +104,7 @@ Card* create_card() {
     Card *c = malloc(sizeof(*c));
     char *aux = malloc(256*sizeof(char));
     printf("\nCREATE NEW CARD\n");
-    printf("ID = "); scanf("%d", &c->id);
+    c->id = get_newid();
     printf("Priority (1-10) = "); scanf("%d", &c->priority);
     Date input;
     do{
@@ -154,15 +173,15 @@ void insert_2(List l1, List l2) {
             getchar(); printf("Person responsable - "); fgets(aux2, 256, stdin); no->card->person = aux2;
             printf("Write a deadline (day month year) - "); scanf("%d%d%d", &no->card->deadline.day, &no->card->deadline.month, &no->card->deadline.year);
             look_list(l2,no->card->id,&ant,&inutil);
-            getchar(); printf("Person responsable - "); fgets(aux2, 256, stdin); no->card.person = aux2;
+            getchar(); printf("Person responsable - "); fgets(aux2, 256, stdin); no->card->person = aux2;
             Date input;
             do{
                 printf("Write a deadline (day month year) - "); scanf("%d%d%d", &input.day, &input.month, &input.year); 
             }while(!IsDateValid(input));
-            no->card.deadline.day=input.day;
-            no->card.deadline.month=input.month;
-            no->card.deadline.year=input.year;
-            look_list(l2,no->card.id,&ant,&inutil);
+            no->card->deadline.day=input.day;
+            no->card->deadline.month=input.month;
+            no->card->deadline.year=input.year;
+            look_list(l2,no->card->id,&ant,&inutil);
             no->next = ant->next;
             ant->next = no;
             delete_list(l1,n);
