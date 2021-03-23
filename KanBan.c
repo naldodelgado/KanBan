@@ -6,9 +6,9 @@
 
 
 /***********************************************************Problems to solve***********************************************************************
-*               - reserve cards ID so there will be no duplicated IDs
+*               - reserve cards ID so there will be no duplicated IDs                                                      ||||||||******* SOLVED ********||||||||
 *                     ideas: reserve them on arrays and then store them on files
-*                             autoincrement IDs (THIS IS ACTUALLY A REQUIREMENT)
+*                             autoincrement IDs (THIS IS ACTUALLY A REQUIREMENT)   
 *                             run through every List and check of there is any card with that same ID 
 *
 *               - table apresentations on horizontal
@@ -17,7 +17,7 @@
 *
 *               -  data storing
 *                     ideas: find an equivalent to JSON ex: "#include<json-c/json.h>"
-*                             brute force creating functions to read and edit files
+*                               brute force creating functions to read and edit files
 *                     questions:
 *                           should we save state after every interaction or should we save state only before quitting the program?
 *                           if we save state only before quitting is there a way to prevent Data loss/corruption after a forced interruption (^C or process kill)?
@@ -29,6 +29,7 @@
  **************************************************************************** */
 
 #define N 5
+
 
 
 int get_newid(){
@@ -172,6 +173,16 @@ void look_list3(List l, Date d, List *ant, List *atual) {
         *atual = NULL;
 }
 
+void look_listCrono(List l, Date d, List *ant, List *atual) {
+    *ant = l; *atual = l->next;
+    while ((*atual)!=NULL && datecmp((*atual)->card->begin,d) > 0) {
+        *ant = *atual;
+        *atual = (*atual)->next;
+    }
+    if ((*atual)!=NULL && datecmp((*atual)->card->begin,d) !=0)
+        *atual = NULL;
+}
+
 List search_list(List l, int n) {
     List ant, atual;
     look_list(l,n,&ant,&atual);
@@ -187,7 +198,7 @@ void delete_list(List l, int n) {
     }
 }
 
-void insert_1(List l) { // this one should insert them ordered by priority
+void insert_1(List l, List Crono) { // this one should insert them ordered by priority
     List no;
     List ant, inutil;
     no = (List)malloc(sizeof(List_node));
@@ -198,10 +209,11 @@ void insert_1(List l) { // this one should insert them ordered by priority
         ant->next = no;
     }
     l->n++;
+    insertCrono(Crono,no->card);
     getchar();system("clear");printf("card %d inserted into ToDo\n",no->card->id);menu();
 }
 
-void insert_2(List l1, List l2) { // this one should insert them ordered by
+void insert_2(List l1, List l2) { // this one should insert them ordered by name
     List no, ant, inutil;
     char *aux2 = malloc(256*sizeof(char));
     if (l2->n == N)
@@ -233,7 +245,7 @@ void insert_2(List l1, List l2) { // this one should insert them ordered by
     printf("card %d from ToDo moved to DOING\n",no->card->id);menu();
 }
 
-void insert_3(List l2, List l3) {
+void insert_3(List l2, List l3) { //this one should be ordered by end date
     List no, ant, inutil;
     int n; printf("Type the card ID you want to move (Doing -> Done) - "); scanf("%d", &n);
     List aux = search_list(l2,n);
@@ -256,6 +268,19 @@ void insert_3(List l2, List l3) {
         l2->n--; l3->n++;
     }
     system("clear");printf("card %d from DOING moved to DONE\n",no->card->id);menu();
+}
+
+void insertCrono(List Crono, Card *c){
+    List no;
+    List ant,inutil;
+    no = (List)malloc(sizeof(List_node));
+    if(no!=NULL){
+        no->card = c;
+        look_listCrono(Crono,no->card->begin,&ant,&inutil);
+        no->next = ant->next;
+        ant->next = no;
+    }
+    Crono->n++;
 }
 
 void reopen(List l3, List l1){
@@ -399,12 +424,33 @@ void print_board(List l1, List l2, List l3) {
     getchar();system("clear");menu();
 }
 
+void cronologic_print(List l){
+    printf("\n____________________________________\n");
+    printf("             CRONOLOGIC TASK PRINT               \n");
+    printf("____________________________________\n");
+    List k1 = l->next;
+    while (k1) {
+        printf(" ___________________\n");
+        printf("| ID - %d\n", k1->card->id);
+        printf("| PRIORITY - %d\n", k1->card->priority);
+        printf("| DATE - %d/%d/%d\n", k1->card->begin.day, k1->card->begin.month, k1->card->begin.year);
+        printf("| DESCRIPTION - %s", k1->card->description);
+        k1 = k1->next;
+    }
+    printf("\nNumber of cards - %d\n", l->n);
+    printf("___________________________________\n");
+    printf("Press any key to go back to menu\n");
+    getchar();
+    getchar();system("clear");menu();
+}
 
 
 int main() {
     List ToDo = create_list();
     List Doing = create_list();
     List Done = create_list();
+    List Crono = create_list();
+    
     
     menu();
     int input;
@@ -413,13 +459,14 @@ int main() {
     while(input!=0) {
         
         if         (input==0) exit(0);
-        else if (input==1) insert_1(ToDo);                      // 1. inserir uma nova tarefa na lista "To Do"
-        else if (input==3) change_person(Doing);                // 3. Alterar a pessoa responsável por um cartão em "Doing"
-        else if (input==2) insert_2(ToDo,Doing);                // 2. Mover cartões "To Do" -> "Doing"
-        else if (input==4) insert_3(Doing,Done);                // 4. Fechar tarefa. "Doing" -> "Done"
-        else if (input==6) print_board(ToDo,Doing,Done);        // 6. Visualizar o quadro
-        else if (input==5) reopen(Done,ToDo);                   // 5. Reabrir tarefa. "Done" -> "To Do"
-        else if (input==7) spy(Doing,Done);                     // 7. Visualizar as tarefas de uma pessoa
+        else if (input==1){insert_1(ToDo,Crono);}                   // 1. inserir uma nova tarefa na lista "To Do"
+        else if (input==3) change_person(Doing);                   // 3. Alterar a pessoa responsável por um cartão em "Doing"
+        else if (input==2) insert_2(ToDo,Doing);                      // 2. Mover cartões "To Do" -> "Doing"
+        else if (input==4) insert_3(Doing,Done);                     // 4. Fechar tarefa. "Doing" -> "Done"
+        else if (input==6) print_board(ToDo,Doing,Done);       // 6. Visualizar o quadro
+        else if (input==5) reopen(Done,ToDo);                        // 5. Reabrir tarefa. "Done" -> "To Do"
+        else if (input==7) spy(Doing,Done);                            // 7. Visualizar as tarefas de uma pessoa
+        else if (input==8) cronologic_print(Crono);                 // 8.Print tasks by creation order
         
         else printf("Error: invalid input\n");
         
@@ -427,7 +474,5 @@ int main() {
     }
     printf("See you next time!\n");
 
-
-    // 8. Visualizar as tarefas ordenas por data de criação
     return 0;
 }
