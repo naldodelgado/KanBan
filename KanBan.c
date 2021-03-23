@@ -3,6 +3,8 @@
 #include <string.h>
 #include "header.h"
 
+
+
 /***********************************************************Problems to solve***********************************************************************
 *               - reserve cards ID so there will be no duplicated IDs
 *                     ideas: reserve them on arrays and then store them on files
@@ -79,31 +81,31 @@ List create_list() {
     return a;
 }
 
-Card create_card() {
-    Card c;
+Card* create_card() {
+    Card *c = malloc(sizeof(*c));
     char *aux = malloc(256*sizeof(char));
     printf("\nCREATE NEW CARD\n");
-    printf("ID = "); scanf("%d", &c.id);
-    printf("Priority (1-10) = "); scanf("%d", &c.priority);
+    printf("ID = "); scanf("%d", &c->id);
+    printf("Priority (1-10) = "); scanf("%d", &c->priority);
     Date input;
     do{
         printf("Creation date (day month year) = "); scanf("%d%d%d", &input.day, &input.month, &input.year); 
     }while(!IsDateValid(input));
-    c.begin.day=input.day;
-    c.begin.month=input.month;
-    c.begin.year=input.year;
+    c->begin.day=input.day;
+    c->begin.month=input.month;
+    c->begin.year=input.year;
     getchar();
-    printf("Description: "); fgets(aux, 256, stdin); c.description=aux;
+    printf("Description: "); fgets(aux, 256, stdin); c->description=aux;
     return c;
 }
 
 void look_list(List l, int p, List *ant, List *atual) {
     *ant = l; *atual = l->next;
-    while ((*atual)!=NULL && (*atual)->card.id<p) {
+    while ((*atual)!=NULL && (*atual)->card->id<p) {
         *ant = *atual;
         *atual = (*atual)->next;
     }
-    if ((*atual)!=NULL && (*atual)->card.id!=p)
+    if ((*atual)!=NULL && (*atual)->card->id!=p)
         *atual = NULL;
 }
 
@@ -128,12 +130,12 @@ void insert_1(List l) {
     no = (List)malloc(sizeof(List_node));
     if (no!=NULL) {
         no->card = create_card();
-        look_list(l,no->card.id,&ant,&inutil);
+        look_list(l,no->card->id,&ant,&inutil);
         no->next = ant->next;
         ant->next = no;
     }
     l->n++;
-    getchar();system("clear");printf("card %d inserted into ToDo\n",no->card.id);menu();
+    getchar();system("clear");printf("card %d inserted into ToDo\n",no->card->id);menu();
 }
 
 void insert_2(List l1, List l2) {
@@ -149,16 +151,16 @@ void insert_2(List l1, List l2) {
         else {
             no = (List)malloc(sizeof(List_node));
             no->card = aux->card;
-            getchar(); printf("Person responsable - "); fgets(aux2, 256, stdin); no->card.person = aux2;
-            printf("Write a deadline (day month year) - "); scanf("%d%d%d", &no->card.deadline.day, &no->card.deadline.month, &no->card.deadline.year);
-            look_list(l2,no->card.id,&ant,&inutil);
+            getchar(); printf("Person responsable - "); fgets(aux2, 256, stdin); no->card->person = aux2;
+            printf("Write a deadline (day month year) - "); scanf("%d%d%d", &no->card->deadline.day, &no->card->deadline.month, &no->card->deadline.year);
+            look_list(l2,no->card->id,&ant,&inutil);
             no->next = ant->next;
             ant->next = no;
             delete_list(l1,n);
             l1->n--; l2->n++;
         }
     }
-    getchar();system("clear");printf("card %d from ToDo moved to DOING\n",no->card.id);menu();
+    getchar();system("clear");printf("card %d from ToDo moved to DOING\n",no->card->id);menu();
 }
 
 void insert_3(List l2, List l3) {
@@ -170,14 +172,14 @@ void insert_3(List l2, List l3) {
     else {
         no = (List)malloc(sizeof(List_node));
         no->card = aux->card;
-        printf("Write date of conclusion (day month year) - "); scanf("%d%d%d", &no->card.end.day, &no->card.end.month, &no->card.end.year);
-        look_list(l3,no->card.id,&ant,&inutil);
+        printf("Write date of conclusion (day month year) - "); scanf("%d%d%d", &no->card->end.day, &no->card->end.month, &no->card->end.year);
+        look_list(l3,no->card->id,&ant,&inutil);
         no->next = ant->next;
         ant->next = no;
         delete_list(l2,n);
         l2->n--; l3->n++;
     }
-    getchar();system("clear");printf("card %d from DOING moved to DONE\n",no->card.id);menu();
+    getchar();system("clear");printf("card %d from DOING moved to DONE\n",no->card->id);menu();
 }
 
 void reopen(List l3, List l1){
@@ -189,18 +191,18 @@ void reopen(List l3, List l1){
     else {
         /* First copy everything we want to keep and then insert it into "ToDo" list*/
         no = (List)malloc(sizeof(List_node));
-        no->card.id = aux->card.id; // copy id
-        no->card.priority = aux->card.priority; // copy priority
-        no->card.begin = aux->card.begin; // copy begin date
-        no->card.description = aux->card.description; // copy description
-        look_list(l1,no->card.id,&ant,&inutil);
+        no->card->id = aux->card->id; // copy id
+        no->card->priority = aux->card->priority; // copy priority
+        no->card->begin = aux->card->begin; // copy begin date
+        no->card->description = aux->card->description; // copy description
+        look_list(l1,no->card->id,&ant,&inutil);
         no->next = ant->next;
         ant->next = no;
         /* delete the card from "Done" list once we have stored a copy of itself on the "ToDo" list*/
         delete_list(l3,n);
         l3->n--;l1->n++;
     }
-    getchar();system("clear");printf("task %d reopened\n",no->card.id);menu();
+    getchar();system("clear");printf("task %d reopened\n",no->card->id);menu();
 }
 
 void change_person(List l2) {
@@ -211,7 +213,7 @@ void change_person(List l2) {
     if (aux == NULL)
         printf("Error: Card not found\n");
     else {
-        getchar(); printf("New person responsable - "); fgets(aux2, 256, stdin); aux->card.person = aux2;
+        getchar(); printf("New person responsable - "); fgets(aux2, 256, stdin); aux->card->person = aux2;
     }
     getchar();system("clear");printf("%s is now in charge of the card %d\n",aux2,n);menu();
 }
@@ -227,14 +229,14 @@ void spy(List l2,List l3){
     /*while funct searching for the person*/
     List k2 = l2->next;
     while(k2){
-        if(!strcmp(k2->card.person,name)){ // comparing the two names
+        if(!strcmp(k2->card->person,name)){ // comparing the two names
             foundflag = 1;
             printf(" ___________________\n");
-            printf("| ID - %d\n", k2->card.id);
-            printf("| PRIORITY - %d\n", k2->card.priority);
-            printf("| DATE - %d/%d/%d\n", k2->card.begin.day, k2->card.begin.month, k2->card.begin.year);
-            printf("| DESCRIPTION - %s", k2->card.description);
-            printf("| DEADLINE - %d/%d/%d\n", k2->card.deadline.day, k2->card.deadline.month, k2->card.deadline.year);
+            printf("| ID - %d\n", k2->card->id);
+            printf("| PRIORITY - %d\n", k2->card->priority);
+            printf("| DATE - %d/%d/%d\n", k2->card->begin.day, k2->card->begin.month, k2->card->begin.year);
+            printf("| DESCRIPTION - %s", k2->card->description);
+            printf("| DEADLINE - %d/%d/%d\n", k2->card->deadline.day, k2->card->deadline.month, k2->card->deadline.year);
         }
         k2 = k2->next;
     }
@@ -249,15 +251,15 @@ void spy(List l2,List l3){
     /*while funct searching for the person*/
     List k3 = l3->next;
     while(k3){
-        if(!strcmp(k3->card.person,name)){ // comparing the two names
+        if(!strcmp(k3->card->person,name)){ // comparing the two names
             foundflag =1;
             printf(" ___________________\n");
-            printf("| ID - %d\n", k3->card.id);
-            printf("| PRIORITY - %d\n", k3->card.priority);
-            printf("| DATE - %d/%d/%d\n", k3->card.begin.day, k3->card.begin.month, k3->card.begin.year);
-            printf("| DESCRIPTION - %s", k3->card.description);
-            printf("| DEADLINE - %d/%d/%d\n", k3->card.deadline.day, k3->card.deadline.month, k3->card.deadline.year);
-            printf("| DATE OF CONCLUSION - %d/%d/%d\n", k3->card.end.day, k3->card.end.month, k3->card.end.year);   
+            printf("| ID - %d\n", k3->card->id);
+            printf("| PRIORITY - %d\n", k3->card->priority);
+            printf("| DATE - %d/%d/%d\n", k3->card->begin.day, k3->card->begin.month, k3->card->begin.year);
+            printf("| DESCRIPTION - %s", k3->card->description);
+            printf("| DEADLINE - %d/%d/%d\n", k3->card->deadline.day, k3->card->deadline.month, k3->card->deadline.year);
+            printf("| DATE OF CONCLUSION - %d/%d/%d\n", k3->card->end.day, k3->card->end.month, k3->card->end.year);   
         }
         k3 = k3->next;
     }
@@ -275,10 +277,10 @@ void print_board(List l1, List l2, List l3) {
     List k1 = l1->next;
     while (k1) {
         printf(" ___________________\n");
-        printf("| ID - %d\n", k1->card.id);
-        printf("| PRIORITY - %d\n", k1->card.priority);
-        printf("| DATE - %d/%d/%d\n", k1->card.begin.day, k1->card.begin.month, k1->card.begin.year);
-        printf("| DESCRIPTION - %s", k1->card.description);
+        printf("| ID - %d\n", k1->card->id);
+        printf("| PRIORITY - %d\n", k1->card->priority);
+        printf("| DATE - %d/%d/%d\n", k1->card->begin.day, k1->card->begin.month, k1->card->begin.year);
+        printf("| DESCRIPTION - %s", k1->card->description);
         k1 = k1->next;
     }
     printf("\nNumber of cards - %d\n", l1->n);
@@ -289,12 +291,12 @@ void print_board(List l1, List l2, List l3) {
     List k2 = l2->next;
     while (k2) {
         printf(" ___________________\n");
-        printf("| ID - %d\n", k2->card.id);
-        printf("| PRIORITY - %d\n", k2->card.priority);
-        printf("| DATE - %d/%d/%d\n", k2->card.begin.day, k2->card.begin.month, k2->card.begin.year);
-        printf("| DESCRIPTION - %s", k2->card.description);
-        printf("| PERSON - %s", k2->card.person);
-        printf("| DEADLINE - %d/%d/%d\n", k2->card.deadline.day, k2->card.deadline.month, k2->card.deadline.year);
+        printf("| ID - %d\n", k2->card->id);
+        printf("| PRIORITY - %d\n", k2->card->priority);
+        printf("| DATE - %d/%d/%d\n", k2->card->begin.day, k2->card->begin.month, k2->card->begin.year);
+        printf("| DESCRIPTION - %s", k2->card->description);
+        printf("| PERSON - %s", k2->card->person);
+        printf("| DEADLINE - %d/%d/%d\n", k2->card->deadline.day, k2->card->deadline.month, k2->card->deadline.year);
         k2 = k2->next;
     }
     printf("\nNumber of cards - %d\n", l2->n);
@@ -305,13 +307,13 @@ void print_board(List l1, List l2, List l3) {
     List k3 = l3->next;
     while (k3) {
         printf(" ___________________\n");
-        printf("| ID - %d\n", k3->card.id);
-        printf("| PRIORITY - %d\n", k3->card.priority);
-        printf("| DATE - %d/%d/%d\n", k3->card.begin.day, k3->card.begin.month, k3->card.begin.year);
-        printf("| DESCRIPTION - %s", k3->card.description);
-        printf("| PERSON - %s", k3->card.person);
-        printf("| DEADLINE - %d/%d/%d\n", k3->card.deadline.day, k3->card.deadline.month, k3->card.deadline.year);
-        printf("| DATE OF CONCLUSION - %d/%d/%d\n", k3->card.end.day, k3->card.end.month, k3->card.end.year);
+        printf("| ID - %d\n", k3->card->id);
+        printf("| PRIORITY - %d\n", k3->card->priority);
+        printf("| DATE - %d/%d/%d\n", k3->card->begin.day, k3->card->begin.month, k3->card->begin.year);
+        printf("| DESCRIPTION - %s", k3->card->description);
+        printf("| PERSON - %s", k3->card->person);
+        printf("| DEADLINE - %d/%d/%d\n", k3->card->deadline.day, k3->card->deadline.month, k3->card->deadline.year);
+        printf("| DATE OF CONCLUSION - %d/%d/%d\n", k3->card->end.day, k3->card->end.month, k3->card->end.year);
         k3 = k3->next;
     }
     printf("\nNumber of cards - %d\n", l3->n);

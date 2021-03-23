@@ -10,13 +10,13 @@ typedef struct card {
     char *description, *person;
 } Card;
 
-Card create_card();
+Card* create_card();
 
 
 
 typedef struct lnode* List;
 typedef struct lnode {
-    Card card;
+    Card *card; // should be a pointer
     int n;
     List next;
 } List_node;
