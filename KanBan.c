@@ -31,7 +31,7 @@
 
 void quit(List a,List b,List c,List d){
     printf("Storing %s...",a->name);
-    fflush(stdout);
+    fflush(stdout); // to flush out the printf buffer
     storeList(a);
     sleep(0.5);
     printf("Storing %s...",b->name);
