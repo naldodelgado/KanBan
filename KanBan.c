@@ -182,7 +182,7 @@ int datecmp(Date d1, Date d2){
 void menu(){
     printf("\n________________________________________________________\n");
     printf("                               MENU                        \n");
-    printf(" 1 - Insert task into ToDo\n");
+    printf(" 1 - Insert task into \"ToDo\"\n");
     printf(" 2 - Move Tasks from \"ToDo\" to \"Doing\"\n");
     printf(" 3 - Give/Alternate task responsability to someone\n");
     printf(" 4 - Finish a task\n");
