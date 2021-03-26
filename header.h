@@ -19,9 +19,12 @@ typedef struct lnode {
     Card *card;
     int n;
     List next;
+    char *name; // to store lists name
 } List_node;
 
 List create_list();
+void storeList(List l);
+void quit(List a,List b,List c,List d);
 void look_list(List l, int p, List *ant, List *atual);
 void look_list1(List l, int p, List *ant, List *atual);
 void look_list2(List l, char *person, List *ant, List *atual);

@@ -1,9 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include "header.h"
-
-
 
 /***********************************************************Problems to solve***********************************************************************
 *               - reserve cards ID so there will be no duplicated IDs                                                      ||||||||******* SOLVED ********||||||||
@@ -30,7 +29,97 @@
 
 #define N 5
 
+void quit(List a,List b,List c,List d){
+    printf("Storing %s...",a->name);
+    fflush(stdout);
+    storeList(a);
+    sleep(0.5);
+    printf("Storing %s...",b->name);
+    fflush(stdout);
+    storeList(b);
+    sleep(0.5);
+    printf("Storing %s...",c->name);
+    fflush(stdout);
+    storeList(c);
+    exit(0);
+}
 
+void storeList(List l){
+    FILE *fp;
+    List k;
+    sleep(1.5);
+    if(!strcmp(l->name,"ToDo") && l->n>0){
+        fp = fopen("ToDo.txt","w");
+        k = l->next;
+        while (k) {
+            k->card->description[strcspn(k->card->description,"\n")] = '\0';
+            fprintf(fp,"%d ", k->card->id);
+            fprintf(fp,"%d ", k->card->priority);
+            fprintf(fp,"%d/%d/%d ", k->card->begin.day, k->card->begin.month, k->card->begin.year);
+            fprintf(fp,"\"%s\"", k->card->description);
+            fprintf(fp,"\n");
+            k = k->next;
+        }
+        fprintf(fp,"\n%d\n", l->n);
+        fclose(fp);
+    }
+    else{
+            if(!strcmp(l->name,"Doing") && l->n>0){
+                fp = fopen("Doing.txt","w");
+                k = l->next;
+                k->card->description[strcspn(k->card->description,"\n")] = '\0';
+                k->card->person[strcspn(k->card->person,"\n")] = '\0';
+                while (k) {
+                    fprintf(fp,"%d ", k->card->id);
+                    fprintf(fp,"%d ", k->card->priority);
+                    fprintf(fp,"%d/%d/%d ", k->card->begin.day, k->card->begin.month, k->card->begin.year);
+                    fprintf(fp,"\"%s\"", k->card->description);
+                    fprintf(fp,"\"%s\"", k->card->person);
+                    fprintf(fp,"%d/%d/%d ", k->card->deadline.day, k->card->deadline.month, k->card->deadline.year);
+                    fprintf(fp,"\n");
+                    k = k->next;
+                }
+                fprintf(fp,"\n%d\n", l->n);
+                fclose(fp);
+            }
+            else{
+                if(!strcmp(l->name,"Done") && l->n>0){
+                    fp = fopen("Done.txt","w");
+                    k = l->next;
+                    k->card->description[strcspn(k->card->description,"\n")] = '\0';
+                    k->card->person[strcspn(k->card->person,"\n")] = '\0';
+                    while (k) {
+                        fprintf(fp,"%d ", k->card->id);
+                        fprintf(fp,"%d ", k->card->priority);
+                        fprintf(fp,"%d/%d/%d ", k->card->begin.day, k->card->begin.month, k->card->begin.year);
+                        fprintf(fp,"\"%s\"", k->card->description);
+                        fprintf(fp,"\"%s\"", k->card->person);
+                        fprintf(fp,"%d/%d/%d ", k->card->deadline.day, k->card->deadline.month, k->card->deadline.year);
+                        fprintf(fp,"%d/%d/%d ", k->card->end.day, k->card->end.month, k->card->end.year);
+                        fprintf(fp,"\n");
+                        k = k->next;
+                    }
+                    fprintf(fp,"\n%d\n", l->n);
+                    fclose(fp);
+                }/*
+                else{
+                    if(!strcmp(l->name,"Crono")){
+                        fp = fopen("Crono.txt","w");
+                        k = l->next;
+                        while (k) {
+                            fprintf(fp,"%d ", k->card->id);
+                            fprintf(fp,"%d ", k->card->priority);
+                            fprintf(fp,"%d/%d/%d", k->card->begin.day, k->card->begin.month, k->card->begin.year);
+                            fprintf(fp,"\"%s\"", k->card->description);
+                            k = k->next;
+                        }
+                        fprintf(fp,"\n%d\n", l->n);
+                    }
+                }*/
+            }
+        }
+        printf("Done\n");
+    }
 
 int get_newid(){
     FILE *f = fopen("id.txt","r");
@@ -48,7 +137,6 @@ int get_newid(){
         fclose(f);
         return id;
     }
-
 }
 
 int IsDateValid(Date input){
@@ -98,7 +186,7 @@ void menu(){
     printf(" 2 - Move Tasks from \"ToDo\" to \"Doing\"\n");
     printf(" 3 - Give/Alternate task responsability to someone\n");
     printf(" 4 - Finish a task\n");
-    printf(" 5 - Interrupt a task\n");
+    printf(" 5 - Reopen a task\n");
     printf(" 6 - View boards\n");
     printf(" 7 - View someone's tasks\n");
     printf(" 8 - Sort tasks by creation date\n");
@@ -303,7 +391,7 @@ void reopen(List l3, List l1){
         delete_list(l3,n);
         l3->n--;l1->n++;
     }
-    getchar();system("clear");printf("task %d reopened\n",no->card->id);menu();
+    system("clear");printf("task %d reopened\n",no->card->id);menu();
 }
 
 void change_person(List l2) {
@@ -430,11 +518,17 @@ void cronologic_print(List l){
     printf("____________________________________\n");
     List k1 = l->next;
     while (k1) {
-        printf(" ___________________\n");
+        printf("___________________\n");
         printf("| ID - %d\n", k1->card->id);
         printf("| PRIORITY - %d\n", k1->card->priority);
         printf("| DATE - %d/%d/%d\n", k1->card->begin.day, k1->card->begin.month, k1->card->begin.year);
         printf("| DESCRIPTION - %s", k1->card->description);
+        if(k1->card->person!=NULL)
+            printf("| PERSON - %s", k1->card->person);
+        if(k1->card->deadline.day>0)
+            printf("| DATE - %d/%d/%d\n", k1->card->deadline.day, k1->card->deadline.month, k1->card->deadline.year);
+        if(k1->card->end.day>0)
+            printf("| DATE - %d/%d/%d\n", k1->card->end.day, k1->card->end.month, k1->card->end.year);
         k1 = k1->next;
     }
     printf("\nNumber of cards - %d\n", l->n);
@@ -444,21 +538,22 @@ void cronologic_print(List l){
     getchar();system("clear");menu();
 }
 
-
 int main() {
     List ToDo = create_list();
     List Doing = create_list();
-    List Done = create_list();
+    List Done = create_list();   
     List Crono = create_list();
-    
+    ToDo->name = "ToDo";
+    Doing->name = "Doing";
+    Done->name = "Done";
+    Crono->name = "Crono";
     
     menu();
     int input;
     printf("$ "); scanf("%d", &input);
 
-    while(input!=0) {
-        
-        if         (input==0) exit(0);
+    while(1) {   
+        if         (input==0) quit(ToDo,Doing,Done,Crono);
         else if (input==1){insert_1(ToDo,Crono);}                   // 1. inserir uma nova tarefa na lista "To Do"
         else if (input==3) change_person(Doing);                   // 3. Alterar a pessoa responsável por um cartão em "Doing"
         else if (input==2) insert_2(ToDo,Doing);                      // 2. Mover cartões "To Do" -> "Doing"
@@ -473,6 +568,5 @@ int main() {
         printf("\n$ "); scanf("%d", &input);
     }
     printf("See you next time!\n");
-
     return 0;
 }
