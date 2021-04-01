@@ -20,6 +20,8 @@
 *                     questions:
 *                           should we save state after every interaction or should we save state only before quitting the program?
 *                           if we save state only before quitting is there a way to prevent Data loss/corruption after a forced interruption (^C or process kill)?
+*
+*               -  organize functions into different files
 ******************************************************************************************************************************************************/
 
 /*****************************************************************************
@@ -44,7 +46,7 @@ void quit(List a,List b,List c,List d){
     exit(0);
 }
 
-void storeList(List l){
+void storeList(List l){     // fazer storeList diferentes para cada lista (sugestão)
     FILE *fp;
     List k;
     sleep(1.5);
