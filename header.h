@@ -24,6 +24,9 @@ typedef struct lnode {
 
 List create_list();
 void storeList(List l);
+Card* load_card(char *line);
+int digestCharInt(char *word);
+Date digestCharDate(char* word);
 void quit(List a,List b,List c,List d);
 void look_list(List l, int p, List *ant, List *atual);
 void look_list1(List l, int p, List *ant, List *atual);
