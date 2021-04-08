@@ -46,23 +46,25 @@ void quit(List a,List b,List c,List d){
     exit(0);
 }
 
- Card* load_card(char *line){
+Card* load_card(char *line){
     Card *c = malloc(sizeof(Card));
-    int i = 0;
+    int i = 1;
     char *word = strtok(line, " ");
+    c->id = atoi(word);
+    printf("%d ", c->id);
     while(word !=NULL){
         switch(i){
-            case 0:
-                c->id = atoi(strtok(NULL, " "));
-                break;
             case 1:
-                c->priority = atoi(strtok(NULL, " ")); 
+                c->priority = atoi(strtok(NULL, " "));
+                printf("%d ", c->priority);
                 break;
             case 2:
                 c->begin= digestCharDate(strtok(NULL, " "));
+                puts("ok");
                 break;
             case 3:
                 c->description = strtok(NULL," ");
+                puts(c->description);
                 break;
             case 4:
                 c->person = strtok(NULL," ");
@@ -74,26 +76,30 @@ void quit(List a,List b,List c,List d){
                 c->end = digestCharDate(strtok(NULL," "));
                 break;
         }
+        i++;
     }
     return c;
 }
 
 Date digestCharDate(char* word){
     Date d;
+    puts(word);
     char * num = strtok(word,"/");
-    int i = 0;
+    puts(num); // ISTO FUNCIONA
+    d.day = atoi(num);
+    printf("the id is %d ",d.day); // ISTO NÂO, A EXECUÇÂO È INTERROMPIDA
+    int i = 1;
     
     while(num !=NULL){
-        if(i == 0){
-            d.day = atoi(strtok(NULL,"/"));
-        }
         if(i == 1){
             d.month = atoi(strtok(NULL,"/"));
-            puts("ok");
+            printf("%d ",d.month);
         }
-        if(i == 2)
+        if(i == 2){
+            d.year = atoi(strtok(NULL," "));
+            printf("%d ",d.year);
 
-            d.year = atoi(strtok(NULL,""));
+        }
         i++;
     }
     return d;
@@ -106,8 +112,7 @@ void loadList(List l, List Crono){
     //puts(strcat(l->name, ".txt"));
     fp = fopen(l->name,"r");
     if(fp==NULL){
-        puts("something went wrong");
-        exit(1);
+        return ; // do nothng and leave it empty
     }
     
     while(fgets(str, 1024, fp) != NULL){
@@ -116,13 +121,14 @@ void loadList(List l, List Crono){
             no = (List)malloc(sizeof(List_node));
             if (no!=NULL) {
                 no->card = load_card(str);
-                if(!strcmp(l->name,"ToDo")){
+                if(strcmp(l->name,"ToDo") == 0){
                     look_list1(l,no->card->priority,&ant,&inutil);
+                    //puts("ok");
                 }
-                if(!strcmp(l->name,"Doing")){
+                if(strcmp(l->name,"Doing") == 0){
                     look_list2(l,no->card->person,&ant,&inutil);
                 }
-                if(!strcmp(l->name,"Done")){
+                if(strcmp(l->name,"Done") == 0){
                     look_list3(l,no->card->end,&ant,&inutil);
                 }
                 no->next = ant->next;
