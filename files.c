@@ -46,9 +46,10 @@ void loadList(List l, List Crono){
             fscanf(fp,"%s",aux);
             strcat(aux,"\n");
             c->description = aux;
-            fscanf(fp,"%s",aux);
-            strcat(aux,"\n");
-            c->person = aux;
+            char * aux2 = malloc(1024*sizeof(char));
+            fscanf(fp,"%s",aux2);
+            strcat(aux2,"\n");
+            c->person = aux2;
             fscanf(fp,"%d %d %d",&c->deadline.day,&c->deadline.month,&c->deadline.year);
             no->card = c;
             look_list2(l,no->card->person,&ant,&inutil);
