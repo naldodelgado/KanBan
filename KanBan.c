@@ -99,7 +99,7 @@ void loadList(List l, List Crono){
     //puts(strcat(l->name, ".txt"));
     fp = fopen(l->name,"r");
     if(fp==NULL){
-        return ; // do nothng and leave it empty
+        return ; // do nothing and leave it empty
     }
     int n;
 
