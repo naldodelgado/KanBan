@@ -48,95 +48,136 @@ void quit(List a,List b,List c,List d){
 
 Card* load_card(char *line){
     Card *c = malloc(sizeof(Card));
-    int i = 1;
     char *word = strtok(line, " ");
     c->id = atoi(word);
-    printf("%d ", c->id);
-    while(word !=NULL){
-        switch(i){
-            case 1:
-                c->priority = atoi(strtok(NULL, " "));
-                printf("%d ", c->priority);
-                break;
-            case 2:
-                c->begin= digestCharDate(strtok(NULL, " "));
-                puts("ok");
-                break;
-            case 3:
-                c->description = strtok(NULL," ");
-                puts(c->description);
-                break;
-            case 4:
-                c->person = strtok(NULL," ");
-                break;
-            case 5:
-                c->deadline = digestCharDate(strtok(NULL," "));
-                break;
-            case 6:
-                c->end = digestCharDate(strtok(NULL," "));
-                break;
-        }
-        i++;
-    }
+    c->priority = atoi(strtok(NULL, " "));
+    c->begin= digestCharDate(strtok(NULL, " "));
+    printf("%d ", c->begin.day);
+    c->description = strtok(NULL," ");
+    c->person = strtok(NULL," ");
+    c->deadline = digestCharDate(strtok(NULL," "));
+    c->end = digestCharDate(strtok(NULL," "));  
+    
     return c;
 }
 
 Date digestCharDate(char* word){
     Date d;
-    puts(word);
-    char * num = strtok(word,"/");
-    puts(num); // ISTO FUNCIONA
-    d.day = atoi(num);
-    printf("the id is %d ",d.day); // ISTO NÂO, A EXECUÇÂO È INTERROMPIDA
-    int i = 1;
-    
-    while(num !=NULL){
-        if(i == 1){
-            d.month = atoi(strtok(NULL,"/"));
-            printf("%d ",d.month);
-        }
-        if(i == 2){
-            d.year = atoi(strtok(NULL," "));
-            printf("%d ",d.year);
 
-        }
-        i++;
-    }
+    char * num = strtok(word,"/");
+    d.day = atoi(num);
+    
+    //int i = 1;
+
+    num = strtok(NULL,"/");
+    d.month = atoi(num);
+    
+    num = strtok(NULL,"/");
+    d.year = atoi(num);
+
+    printf("%d/%d/%d\n", d.day, d.month, d.year);
+    
+    // while(num !=NULL){
+    //     //puts(num);
+    //     if(i == 1){
+    //         d.month = atoi(strtok(NULL,"/"));
+    //         printf("%d ",d.month);
+    //     }
+    //     if(i == 2){
+    //         d.year = atoi(strtok(NULL," "));
+    //         printf("%d ",d.year);
+
+    //     }
+    //     i++;
+    // }
     return d;
 }
 
 void loadList(List l, List Crono){
     FILE *fp;
     
-    char * str = malloc ( 256 * sizeof(char));
     //puts(strcat(l->name, ".txt"));
     fp = fopen(l->name,"r");
     if(fp==NULL){
         return ; // do nothng and leave it empty
     }
-    
-    while(fgets(str, 1024, fp) != NULL){
+    int n;
+
+    fscanf(fp,"%d",&n);
+
+    if(strcmp(l->name,"ToDo") == 0){
+        for(int j = 0; j<n; j++){
             List no;
             List ant, inutil;
             no = (List)malloc(sizeof(List_node));
-            if (no!=NULL) {
-                no->card = load_card(str);
-                if(strcmp(l->name,"ToDo") == 0){
-                    look_list1(l,no->card->priority,&ant,&inutil);
-                    //puts("ok");
-                }
-                if(strcmp(l->name,"Doing") == 0){
-                    look_list2(l,no->card->person,&ant,&inutil);
-                }
-                if(strcmp(l->name,"Done") == 0){
-                    look_list3(l,no->card->end,&ant,&inutil);
-                }
-                no->next = ant->next;
-                ant->next = no;
-            }
+            Card *c = malloc(sizeof(Card)); 
+            fscanf(fp,"%d",&c->id);
+            fscanf(fp,"%d",&c->priority);
+            fscanf(fp,"%d %d %d",&c->begin.day,&c->begin.month,&c->begin.year);
+            char * aux = malloc(1024*sizeof(char));
+            fscanf(fp,"%s",aux);
+            strcat(aux,"\n");
+            c->description = aux;
+            no->card = c;
+            look_list1(l,no->card->priority,&ant,&inutil);
+            no->next = ant->next;
+            ant->next = no;
             l->n++;
             insertCrono(Crono,no->card);
+        }
     }
+    else if((strcmp(l->name,"Doing") == 0)){
+        for(int j = 0; j<n; j++){
+            List no;
+            List ant, inutil;
+            no = (List)malloc(sizeof(List_node));
+            Card *c = malloc(sizeof(Card)); 
+            fscanf(fp,"%d",&c->id);
+            fscanf(fp,"%d",&c->priority);
+            fscanf(fp,"%d %d %d",&c->begin.day,&c->begin.month,&c->begin.year);
+            char * aux = malloc(1024*sizeof(char));
+            fscanf(fp,"%s",aux);
+            strcat(aux,"\n");
+            c->description = aux;
+            fscanf(fp,"%s",aux);
+            strcat(aux,"\n");
+            c->person = aux;
+            fscanf(fp,"%d %d %d",&c->deadline.day,&c->deadline.month,&c->deadline.year);
+            no->card = c;
+            look_list2(l,no->card->person,&ant,&inutil);
+            no->next = ant->next;
+            ant->next = no;
+            l->n++;
+            insertCrono(Crono,no->card);
+        }
+    }
+    else if((strcmp(l->name,"Done") == 0)){
+            for(int j = 0; j<n; j++){
+                List no;
+                List ant, inutil;
+                no = (List)malloc(sizeof(List_node));
+                Card *c = malloc(sizeof(Card)); 
+                fscanf(fp,"%d",&c->id);
+                fscanf(fp,"%d",&c->priority);
+                fscanf(fp,"%d %d %d",&c->begin.day,&c->begin.month,&c->begin.year);
+                char * aux = malloc(1024*sizeof(char));
+                fscanf(fp,"%s",aux);
+                strcat(aux,"\n");
+                c->description = aux;
+                fscanf(fp,"%s",aux);
+                strcat(aux,"\n");
+                c->person = aux;
+                fscanf(fp,"%d %d %d",&c->deadline.day,&c->deadline.month,&c->deadline.year);
+                fscanf(fp,"%d %d %d",&c->end.day,&c->end.month,&c->end.year);
+                no->card = c;
+                look_list2(l,no->card->person,&ant,&inutil);
+                no->next = ant->next;
+                ant->next = no;
+                l->n++;
+                insertCrono(Crono,no->card);
+        }
+    }
+
     fclose(fp);
 }
 
@@ -146,72 +187,61 @@ void storeList(List l){     // fazer storeList diferentes para cada lista (suges
     sleep(1.5);
     if(!strcmp(l->name,"ToDo") && l->n>0){
         fp = fopen("ToDo","w");
+        fprintf(fp,"%d\n",l->n);
         k = l->next;
         while (k) {
             k->card->description[strcspn(k->card->description,"\n")] = '\0';
-            fprintf(fp,"%d ", k->card->id);
-            fprintf(fp,"%d ", k->card->priority);
-            fprintf(fp,"%d/%d/%d ", k->card->begin.day, k->card->begin.month, k->card->begin.year);
-            fprintf(fp,"\"%s\"", k->card->description);
-            fprintf(fp,"\n");
+            fprintf(fp,"%d\n", k->card->id);
+            fprintf(fp,"%d\n", k->card->priority);
+            fprintf(fp,"%d %d %d\n", k->card->begin.day, k->card->begin.month, k->card->begin.year);
+            fprintf(fp,"%s\n", k->card->description);
+            //fprintf(fp,"\n");
             k = k->next;
         }
-        fprintf(fp,"\n%d\n", l->n);
+        //fprintf(fp,"\n%d\n", l->n);
         fclose(fp);
     }
     else{
             if(!strcmp(l->name,"Doing") && l->n>0){
                 fp = fopen("Doing","w");
+                fprintf(fp,"%d\n",l->n);
                 k = l->next;
                 k->card->description[strcspn(k->card->description,"\n")] = '\0';
                 k->card->person[strcspn(k->card->person,"\n")] = '\0';
                 while (k) {
-                    fprintf(fp,"%d ", k->card->id);
-                    fprintf(fp,"%d ", k->card->priority);
-                    fprintf(fp,"%d/%d/%d ", k->card->begin.day, k->card->begin.month, k->card->begin.year);
-                    fprintf(fp,"\"%s\"", k->card->description);
-                    fprintf(fp,"\"%s\"", k->card->person);
-                    fprintf(fp,"%d/%d/%d ", k->card->deadline.day, k->card->deadline.month, k->card->deadline.year);
-                    fprintf(fp,"\n");
+                    fprintf(fp,"%d\n", k->card->id);
+                    fprintf(fp,"%d\n", k->card->priority);
+                    fprintf(fp,"%d %d %d\n", k->card->begin.day, k->card->begin.month, k->card->begin.year);
+                    fprintf(fp,"%s\n", k->card->description);
+                    fprintf(fp,"%s\n", k->card->person);
+                    fprintf(fp,"%d %d %d\n", k->card->deadline.day, k->card->deadline.month, k->card->deadline.year);
+                    //fprintf(fp,"\n");
                     k = k->next;
                 }
-                fprintf(fp,"\n%d\n", l->n);
+                //fprintf(fp,"\n%d\n", l->n);
                 fclose(fp);
             }
             else{
                 if(!strcmp(l->name,"Done") && l->n>0){
                     fp = fopen("Done","w");
+                    fprintf(fp,"%d\n",l->n);
                     k = l->next;
                     k->card->description[strcspn(k->card->description,"\n")] = '\0';
                     k->card->person[strcspn(k->card->person,"\n")] = '\0';
                     while (k) {
-                        fprintf(fp,"%d ", k->card->id);
-                        fprintf(fp,"%d ", k->card->priority);
-                        fprintf(fp,"%d/%d/%d ", k->card->begin.day, k->card->begin.month, k->card->begin.year);
-                        fprintf(fp,"\"%s\"", k->card->description);
-                        fprintf(fp,"\"%s\"", k->card->person);
-                        fprintf(fp,"%d/%d/%d ", k->card->deadline.day, k->card->deadline.month, k->card->deadline.year);
-                        fprintf(fp,"%d/%d/%d ", k->card->end.day, k->card->end.month, k->card->end.year);
-                        fprintf(fp,"\n");
+                        fprintf(fp,"%d\n", k->card->id);
+                        fprintf(fp,"%d\n", k->card->priority);
+                        fprintf(fp,"%d %d %d\n", k->card->begin.day, k->card->begin.month, k->card->begin.year);
+                        fprintf(fp,"%s\n", k->card->description);
+                        fprintf(fp,"%s\n", k->card->person);
+                        fprintf(fp,"%d %d %d\n", k->card->deadline.day, k->card->deadline.month, k->card->deadline.year);
+                        fprintf(fp,"%d %d %d\n", k->card->end.day, k->card->end.month, k->card->end.year);
+                        //fprintf(fp,"\n");
                         k = k->next;
                     }
-                    fprintf(fp,"\n%d\n", l->n);
+                    //fprintf(fp,"\n%d\n", l->n);
                     fclose(fp);
-                }/*
-                else{
-                    if(!strcmp(l->name,"Crono")){
-                        fp = fopen("Crono.txt","w");
-                        k = l->next;
-                        while (k) {
-                            fprintf(fp,"%d ", k->card->id);
-                            fprintf(fp,"%d ", k->card->priority);
-                            fprintf(fp,"%d/%d/%d", k->card->begin.day, k->card->begin.month, k->card->begin.year);
-                            fprintf(fp,"\"%s\"", k->card->description);
-                            k = k->next;
-                        }
-                        fprintf(fp,"\n%d\n", l->n);
-                    }
-                }*/
+                }
             }
         }
         printf("Done\n");
