@@ -85,23 +85,32 @@ Date digestCharDate(char* word){
     Date d;
     puts(word);
     char * num = strtok(word,"/");
-    puts(num); // ISTO FUNCIONA
+    puts(num);
     d.day = atoi(num);
-    printf("the id is %d ",d.day); // ISTO NÂO, A EXECUÇÂO È INTERROMPIDA
-    int i = 1;
     
-    while(num !=NULL){
-        if(i == 1){
-            d.month = atoi(strtok(NULL,"/"));
-            printf("%d ",d.month);
-        }
-        if(i == 2){
-            d.year = atoi(strtok(NULL," "));
-            printf("%d ",d.year);
+    //int i = 1;
 
-        }
-        i++;
-    }
+    num = strtok(NULL,"/");
+    d.month = atoi(num);
+    
+    num = strtok(NULL,"/");
+    d.year = atoi(num);
+
+    printf("%d/%d/%d\n", d.day, d.month, d.year);
+    
+    // while(num !=NULL){
+    //     //puts(num);
+    //     if(i == 1){
+    //         d.month = atoi(strtok(NULL,"/"));
+    //         printf("%d ",d.month);
+    //     }
+    //     if(i == 2){
+    //         d.year = atoi(strtok(NULL," "));
+    //         printf("%d ",d.year);
+
+    //     }
+    //     i++;
+    // }
     return d;
 }
 
@@ -112,7 +121,7 @@ void loadList(List l, List Crono){
     //puts(strcat(l->name, ".txt"));
     fp = fopen(l->name,"r");
     if(fp==NULL){
-        return ; // do nothng and leave it empty
+        return ; // do nothing and leave it empty
     }
     
     while(fgets(str, 1024, fp) != NULL){
@@ -123,7 +132,7 @@ void loadList(List l, List Crono){
                 no->card = load_card(str);
                 if(strcmp(l->name,"ToDo") == 0){
                     look_list1(l,no->card->priority,&ant,&inutil);
-                    //puts("ok");
+                    puts("ok");
                 }
                 if(strcmp(l->name,"Doing") == 0){
                     look_list2(l,no->card->person,&ant,&inutil);
