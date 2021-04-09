@@ -185,46 +185,29 @@ void storeList(List l){     // fazer storeList diferentes para cada lista (suges
     FILE *fp;
     List k;
     sleep(1.5);
-    if(!strcmp(l->name,"ToDo") && l->n>0){
+    if(!strcmp(l->name,"ToDo")){
         fp = fopen("ToDo","w");
         fprintf(fp,"%d\n",l->n);
-        k = l->next;
-        while (k) {
-            k->card->description[strcspn(k->card->description,"\n")] = '\0';
-            fprintf(fp,"%d\n", k->card->id);
-            fprintf(fp,"%d\n", k->card->priority);
-            fprintf(fp,"%d %d %d\n", k->card->begin.day, k->card->begin.month, k->card->begin.year);
-            fprintf(fp,"%s\n", k->card->description);
-            //fprintf(fp,"\n");
-            k = k->next;
+        if (l->n>0) {
+            k = l->next;
+            while (k) {
+                k->card->description[strcspn(k->card->description,"\n")] = '\0';
+                fprintf(fp,"%d\n", k->card->id);
+                fprintf(fp,"%d\n", k->card->priority);
+                fprintf(fp,"%d %d %d\n", k->card->begin.day, k->card->begin.month, k->card->begin.year);
+                fprintf(fp,"%s\n", k->card->description);
+                //fprintf(fp,"\n");
+                k = k->next;
+            }
         }
         //fprintf(fp,"\n%d\n", l->n);
         fclose(fp);
     }
     else{
-            if(!strcmp(l->name,"Doing") && l->n>0){
+            if(!strcmp(l->name,"Doing")){
                 fp = fopen("Doing","w");
                 fprintf(fp,"%d\n",l->n);
-                k = l->next;
-                k->card->description[strcspn(k->card->description,"\n")] = '\0';
-                k->card->person[strcspn(k->card->person,"\n")] = '\0';
-                while (k) {
-                    fprintf(fp,"%d\n", k->card->id);
-                    fprintf(fp,"%d\n", k->card->priority);
-                    fprintf(fp,"%d %d %d\n", k->card->begin.day, k->card->begin.month, k->card->begin.year);
-                    fprintf(fp,"%s\n", k->card->description);
-                    fprintf(fp,"%s\n", k->card->person);
-                    fprintf(fp,"%d %d %d\n", k->card->deadline.day, k->card->deadline.month, k->card->deadline.year);
-                    //fprintf(fp,"\n");
-                    k = k->next;
-                }
-                //fprintf(fp,"\n%d\n", l->n);
-                fclose(fp);
-            }
-            else{
-                if(!strcmp(l->name,"Done") && l->n>0){
-                    fp = fopen("Done","w");
-                    fprintf(fp,"%d\n",l->n);
+                if (l->n>0) {
                     k = l->next;
                     k->card->description[strcspn(k->card->description,"\n")] = '\0';
                     k->card->person[strcspn(k->card->person,"\n")] = '\0';
@@ -235,9 +218,32 @@ void storeList(List l){     // fazer storeList diferentes para cada lista (suges
                         fprintf(fp,"%s\n", k->card->description);
                         fprintf(fp,"%s\n", k->card->person);
                         fprintf(fp,"%d %d %d\n", k->card->deadline.day, k->card->deadline.month, k->card->deadline.year);
-                        fprintf(fp,"%d %d %d\n", k->card->end.day, k->card->end.month, k->card->end.year);
                         //fprintf(fp,"\n");
                         k = k->next;
+                    }
+                }
+                //fprintf(fp,"\n%d\n", l->n);
+                fclose(fp);
+            }
+            else{
+                if(!strcmp(l->name,"Done")){
+                    fp = fopen("Done","w");
+                    fprintf(fp,"%d\n",l->n);
+                    if (l->n>0) {
+                        k = l->next;
+                        k->card->description[strcspn(k->card->description,"\n")] = '\0';
+                        k->card->person[strcspn(k->card->person,"\n")] = '\0';
+                        while (k) {
+                            fprintf(fp,"%d\n", k->card->id);
+                            fprintf(fp,"%d\n", k->card->priority);
+                            fprintf(fp,"%d %d %d\n", k->card->begin.day, k->card->begin.month, k->card->begin.year);
+                            fprintf(fp,"%s\n", k->card->description);
+                            fprintf(fp,"%s\n", k->card->person);
+                            fprintf(fp,"%d %d %d\n", k->card->deadline.day, k->card->deadline.month, k->card->deadline.year);
+                            fprintf(fp,"%d %d %d\n", k->card->end.day, k->card->end.month, k->card->end.year);
+                            //fprintf(fp,"\n");
+                            k = k->next;
+                        }
                     }
                     //fprintf(fp,"\n%d\n", l->n);
                     fclose(fp);
