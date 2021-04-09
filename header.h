@@ -2,8 +2,6 @@ typedef struct date {
     int day, month, year,valid;
 } Date;
 
-
-
 typedef struct card {
     int id, priority;
     Date begin, deadline, end;
@@ -11,8 +9,6 @@ typedef struct card {
 } Card;
 
 Card* create_card();
-
-
 
 typedef struct lnode* List;
 typedef struct lnode {
@@ -43,3 +39,5 @@ void reopen(List l1,List l2);
 void spy(List l2,List l3);
 void insertCrono(List Crono, Card *c);
 void look_listCrono(List l, Date d, List *ant, List *atual);
+int IsDateValid(Date input);
+int datecmp(Date d1, Date d2)

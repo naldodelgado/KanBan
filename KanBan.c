@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -6,32 +7,11 @@
 #include "prints.c"
 #include "files.c"
 
-/***********************************************************Problems to solve***********************************************************************
-*               - reserve cards ID so there will be no duplicated IDs                                                      ||||||||******* SOLVED ********||||||||
-*                     ideas: reserve them on arrays and then store them on files
-*                             autoincrement IDs (THIS IS ACTUALLY A REQUIREMENT)   
-*                             run through every List and check of there is any card with that same ID 
-*
-*               - table apresentations on horizontal
-*                     ideas: brute force
-*                             find 'presentations hacks' w\o using <graph.h> on stack
-*
-*               -  data storing
-*                     ideas: find an equivalent to JSON ex: "#include<json-c/json.h>"
-*                               brute force creating functions to read and edit files
-*                     questions:
-*                           should we save state after every interaction or should we save state only before quitting the program?
-*                           if we save state only before quitting is there a way to prevent Data loss/corruption after a forced interruption (^C or process kill)?
-*
-*               -  organize functions into different files
-******************************************************************************************************************************************************/
-
-/*****************************************************************************
- *  Data files should contain an array with all IDs so we dont repeat IDs
- *  Card List file for each List, probably should keep each List on different files
- **************************************************************************** */
-
 #define N 5
+
+void program_kill_handler(int num){
+    write(STDOUT_FILENO,"\ngo to menu and then quit the program by pressing 0\n",53);
+}
 
 void quit(List a,List b,List c,List d){
     printf("Storing %s...",a->name);
@@ -68,8 +48,6 @@ Date digestCharDate(char* word){
 
     char * num = strtok(word,"/");
     d.day = atoi(num);
-    
-    //int i = 1;
 
     num = strtok(NULL,"/");
     d.month = atoi(num);
@@ -389,6 +367,7 @@ void spy(List l2,List l3){
 }
 
 int main() {
+    signal(SIGINT,program_kill_handler);
     List ToDo = create_list();
     List Doing = create_list();
     List Done = create_list();   

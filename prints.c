@@ -11,7 +11,9 @@ void menu(){
     printf(" 6 - View boards\n");
     printf(" 7 - View someone's tasks\n");
     printf(" 8 - Sort tasks by creation date\n");
-    printf("________________________________________________________\n");
+    printf("========================================================\n");
+    printf("                    0 - SAVE AND QUIT \n");
+    printf("========================================================\n");
 }
 
 void print_board(List l1, List l2, List l3) {
